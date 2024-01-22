@@ -1,13 +1,15 @@
 const express = require('express');
 require('dotenv').config();
 const port = process.env.PORT || 4000;
+const cors = require('cors');
 const userRoute = require('./routes/userRoute');
 
 const mongoDB = require('./database/connection');
 const errorMessages = require('./midleware/errorHandler');
+//MONGODB_URL = 'mongodb+srv://shanjayalath:orzg4OVueazgIFkT@cyberclusetr.quqvqwh.mongodb.net/CyberBackEnd?retryWrites=true&w=majority'
 
 const app = express();
-
+app.use(cors({origin:process.env.ORIGIN_URL})); // Allow requests from localhost:3000
 
 //midelware
 app.use(express.json());

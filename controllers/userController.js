@@ -27,7 +27,8 @@ module.exports = {
                 phone:User.phone
             });
         }catch(error){
-            next(errorMessages(500,error))
+            res.status(409).json({Error : error,message:`Duplicate ${error.keyValue}`});
+            //next(errorMessages(409,error))
         }
     },
 
@@ -50,7 +51,7 @@ module.exports = {
                 }
             },
                 process.env.ACCESS_TOKEN_SECRET,
-                { expiresIn : "60m" }
+                { expiresIn : "1m" }
             );
             res.status(200).json({ accessToken })
         }else{
