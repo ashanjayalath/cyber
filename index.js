@@ -6,12 +6,15 @@ const userRoute = require('./routes/userRoute');
 
 const mongoDB = require('./database/connection');
 const errorMessages = require('./midleware/errorHandler');
+const cookieParser = require('cookie-parser');
 
 const app = express();
-app.use(cors({origin:process.env.ORIGIN_URL || "http://localhost:3000"})); // Allow requests from localhost:3000
 
 //midelware
 app.use(express.json());
+app.use(cors({origin:process.env.ORIGIN_URL || "http://localhost:3000"})); // Allow requests from localhost:3000
+app.use(cookieParser());
+
 app.use((err,req,res,next)=>{
     const statusCode = err.statusCode || 500;
     const message = err.message || "Internal Server Error";

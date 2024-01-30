@@ -37,10 +37,6 @@ module.exports = {
     //Public
     userLogin : async(req,res)=>{
         const {email,password} = req.body;
-        // if (!email || !password){
-        //     res.status(400);
-        //     throw new Error('All fields are mandatory!');
-        // }
         const User = await userModel.findOne({email});
         if(User && (await bcrypt.compare(password,User.password))){
             const accessToken = jwt.sign({
@@ -51,23 +47,34 @@ module.exports = {
                 }
             },
                 process.env.ACCESS_TOKEN_SECRET,
-                { expiresIn : "1m" }
+                { expiresIn : "15m" }
             );
-            res.status(200).json({ accessToken })
+            const refreshToken = jwt.sign({
+                user:{
+                    name:User.name,
+                    email:User.email,
+                    id:User.id
+                }
+            },
+                process.env.REFRESH_ACCESS_TOKEN_SECRET,
+                { expiresIn : "30d" }
+            );
+            res.cookie('refreshToken',refreshToken,{maxAge:60000})
+            res.status(200).json({Valid:true,Message:"User Sucessfully login",token:accessToken})
         }else{
             res.status(401).json({error : "Email or password not valid"});
         }
     },
     
     //LogOut user
-    //POST method
+    //GET method
     //Public
     userLogOut : async(req,res)=>{
         try {
+            const cookies = req.cookies;
+            res.clearCookie('jwt',{httpOnly:true,sameSite:'none',secure:true},"refreshToken")
             res.setHeader('Clear-Site-Data', '"cookies"');
             res.status(200).json({ message: 'You are logged out!' });
-            //const User = await userModel.findByIdAndRemove({_id : req.params.id});
-            //res.status(200).json({message : "User Log Out Successfully.."});
         } catch (error) {
             res.status(500).json({message:error.message})
         }
@@ -147,4 +154,6 @@ module.exports = {
              //res.redirect("/user/login");
          }
     }
+
+
 };
