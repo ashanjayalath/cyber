@@ -2,6 +2,10 @@ const route = require('express').Router();
 const validateToken = require('../midleware/validateTokenHandler');
 const controller = require('../controllers/userController');
 const controllerToken = require('../controllers/refreshTokenConroller');
+const fileUploadController = require('../controllers/fileUploadController');
+const upload = require('../midleware/multerUpload');
+
+
 
 //user login controller
 route.post('/login',controller.userLogin);
@@ -10,7 +14,7 @@ route.post('/login',controller.userLogin);
 route.get('/logout',controller.userLogOut);
 
 //user register controller
-route.post('/register',controller.userRegister);
+route.post('/register',upload.single('image'),controller.userRegister);
 
 //user data update
 route.put('/update/:id',validateToken,controller.userUpdate);
@@ -23,5 +27,8 @@ route.delete('/delete/:id',validateToken,controller.userDelete);
 
 //refresh-Token
 route.get('/refresh',controllerToken.refreshToken);
+
+//User Photo Upload without register
+route.post('/upload/:id',upload.single('image'),fileUploadController.uploadPhoto);
 
 module.exports = route

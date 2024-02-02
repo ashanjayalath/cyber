@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const errorMessages = require('../midleware/errorHandler');
 
+
 module.exports = {
     //Register user
     //POST method
@@ -10,7 +11,6 @@ module.exports = {
     userRegister : async (req,res,next)=>{
         //get the data from request body
         const {name,email,password,phone} = req.body;
-
         try{
             //Hashed the password
             const hashPassword = await bcrypt.hash(password,10);
@@ -24,7 +24,7 @@ module.exports = {
                 _id:User.id,
                 name:User.name,
                 email:User.email,
-                phone:User.phone
+                phone:User.phone,
             });
         }catch(error){
             res.status(409).json({Error : error,message:`Duplicate ${error.keyValue}`});
@@ -87,7 +87,7 @@ module.exports = {
     //public
     userUpdate : async (req,res)=>{
         //get the data from request body
-        const {name,email,phone,city,age,avatar,id} = req.body;
+        const {name,email,phone,city,age,image,id} = req.body;
 
         try{
             const UserUpdate = await userModel.findByIdAndUpdate(
@@ -99,7 +99,7 @@ module.exports = {
                         phone : req.body.phone,
                         city : req.body.city,
                         age : req.body.age,
-                        avatar : req.body.avatar
+                        image : req.body.image
                     }
                 },
                 {new: true}

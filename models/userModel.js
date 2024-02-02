@@ -38,9 +38,9 @@ const userSchema = mongoose.Schema(
             minlength:2,
             required: [false,"Please enter your age"]
         },
-        avatar:{
-            type: String,
-            required: [false,"Please add your avatar"],
+        image:{
+            type: Object,
+            required: [false,"Please add your profile photo"],
             default:process.env.DEFAULT_AVATAR
         }
     },
