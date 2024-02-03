@@ -2,6 +2,7 @@ const userModel = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const errorMessages = require('../midleware/errorHandler');
+const {cloudinary,opt} = require('../util/cloudinary');
 
 
 module.exports = {
@@ -11,20 +12,24 @@ module.exports = {
     userRegister : async (req,res,next)=>{
         //get the data from request body
         const {name,email,password,phone} = req.body;
+
         try{
+            const result = await cloudinary.uploader.upload(req.file.path,opt);
             //Hashed the password
             const hashPassword = await bcrypt.hash(password,10);
             const User = await userModel.create({
                 name,
                 email,
                 password:hashPassword,
-                phone
+                phone,
+                image:result || process.env.DEFAULT_AVATAR
             })
             res.status(200).json({
                 _id:User.id,
                 name:User.name,
                 email:User.email,
                 phone:User.phone,
+                image:User.image
             });
         }catch(error){
             res.status(409).json({Error : error,message:`Duplicate ${error.keyValue}`});
@@ -59,8 +64,9 @@ module.exports = {
                 process.env.REFRESH_ACCESS_TOKEN_SECRET,
                 { expiresIn : "30d" }
             );
+            const {password,...bulk} = User._doc;
             res.cookie('refreshToken',refreshToken,{maxAge:60000})
-            res.status(200).json({Valid:true,Message:"User Sucessfully login",token:accessToken})
+            res.status(200).json({Valid:true,Message:"User Sucessfully login",user:bulk,token:accessToken})
         }else{
             res.status(401).json({error : "Email or password not valid"});
         }
@@ -130,7 +136,7 @@ module.exports = {
                     },
                     {new: true}
                     );
-                    res.status(200).json({Message : "Password Updated Successfully..."});
+                    res.status(200).json({Message : "Password Updated Successfully...",UserPasswordUpdate});
             }catch(error){
                 res.status(500).json({message:error.message})
             }
@@ -148,7 +154,7 @@ module.exports = {
     userDelete : async(req,res)=>{
          try{
             const userDelete = await userModel.findOneAndDelete({_id: req.params.id});
-            res.status(200).json({message : "User Delete Successfully.."});
+            res.status(200).json({message : "User Delete Successfully..",userDelete});
          }catch(error){
              res.status(500).json({message:error.message})
              //res.redirect("/user/login");

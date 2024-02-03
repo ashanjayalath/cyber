@@ -28,7 +28,11 @@ route.delete('/delete/:id',validateToken,controller.userDelete);
 //refresh-Token
 route.get('/refresh',controllerToken.refreshToken);
 
-//User Photo Upload without register
-route.post('/upload/:id',upload.single('image'),fileUploadController.uploadPhoto);
+//User Photo Upload with register
+route.post('/image/upload/:id',upload.single('image'),fileUploadController.uploadPhoto);
+
+//User Photo Delete
+route.delete('/image/delete/:public_id',fileUploadController.userPhotoDelete);
+
 
 module.exports = route
