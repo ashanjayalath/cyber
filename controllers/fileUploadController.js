@@ -1,5 +1,10 @@
 const userModel = require('../models/userModel');
 const {cloudinary,opt} = require('../util/cloudinary');
+const fs = require('fs')
+const { promisify } = require('util')
+
+const unlinkAsync = promisify(fs.unlink)
+
 
 
 module.exports = {
@@ -18,6 +23,7 @@ module.exports = {
                 {new: true}
                 );
                 const {password,...bulk} = UserUpdate._doc;
+                await unlinkAsync(req.file.path)
                 res.status(200).json(bulk);
         }catch(error){
             res.status(500).send({message:error.message})

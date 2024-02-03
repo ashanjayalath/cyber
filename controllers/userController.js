@@ -3,6 +3,10 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const errorMessages = require('../midleware/errorHandler');
 const {cloudinary,opt} = require('../util/cloudinary');
+const fs = require('fs')
+const { promisify } = require('util')
+
+const unlinkAsync = promisify(fs.unlink)
 
 
 module.exports = {
@@ -24,6 +28,7 @@ module.exports = {
                 phone,
                 image:result || process.env.DEFAULT_AVATAR
             })
+            await unlinkAsync(req.file.path)
             res.status(200).json({
                 _id:User.id,
                 name:User.name,
