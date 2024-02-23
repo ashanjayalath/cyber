@@ -1,4 +1,4 @@
-const userModel = require('../models/userModel');
+const userModel = require('../models/auth_model/userModel');
 const {cloudinary,opt} = require('../util/cloudinary');
 const fs = require('fs')
 const { promisify } = require('util')
